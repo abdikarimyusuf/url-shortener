@@ -1,0 +1,111 @@
+resource "aws_ecs_cluster" "cluster" {
+  name = var.cluster_name
+
+  setting {
+    name  = "containerInsights"
+    value = "enabled"
+  }
+
+
+}
+
+
+resource "aws_ecs_service" "svc" {
+  name            = var.service_name
+  cluster         = aws_ecs_cluster.cluster.id
+  task_definition = aws_ecs_task_definition.task.arn
+  desired_count   = var.desired_count
+  launch_type     = "FARGATE"
+
+  network_configuration {
+    subnets          = var.subnets
+    security_groups  = var.security_group
+    assign_public_ip = true
+  }
+
+  load_balancer {
+    target_group_arn = var.target_group_arn
+    container_name   = "frontend"
+    container_port   = var.frontend_port
+  }
+
+
+
+}
+
+
+resource "aws_ecs_task_definition" "task" {
+
+  family                   = var.family
+  network_mode             = "awsvpc"
+  requires_compatibilities = ["FARGATE"]
+  cpu                      = var.cpu
+  memory                   = var.memory
+  execution_role_arn       = var.execution_role_arn
+  task_role_arn            = var.task_role_arn
+
+
+
+  container_definitions = jsonencode([
+    {
+      name      = "backend"
+      image     = var.backend_image
+      essential = true
+
+      secrets = [
+        {
+          name      = "MEMOS_DSN"
+          valueFrom = "${var.database_secret_arn}:DATABASE_URL::"
+        }
+      ]
+
+      environment = [
+        { name = "memos_MODE", value = "prod" },
+        { name = "MEMOS_DRIVER", value = "postgres" }
+      ]
+      portMappings = [
+        {
+          containerPort = var.backend_port
+          protocol      = "tcp"
+        }
+      ]
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-group         = var.backend_log_group
+          awslogs-region        = var.region
+          awslogs-stream-prefix = "ecs"
+        }
+      }
+
+    },
+
+
+    {
+      name      = "frontend"
+      image     = var.frontend_image
+      essential = true
+
+      portMappings = [
+        { containerPort = var.frontend_port, protocol = "tcp" }
+      ]
+
+
+      logConfiguration = {
+        logDriver = "awslogs"
+        options = {
+          awslogs-region        = var.region
+          awslogs-group         = var.frontend_log_group
+          awslogs-stream-prefix = "ecs"
+        }
+      }
+    }
+  ])
+
+
+
+
+
+
+
+}

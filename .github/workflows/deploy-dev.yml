@@ -1,0 +1,155 @@
+name: Deploy to Development
+
+concurrency:
+  group: terraform-dev
+  cancel-in-progress: false
+
+on:
+  push:
+    branches: [dev]
+    paths:
+      - "app/**"
+  workflow_dispatch:
+    inputs:
+     environment:
+      type: choice
+      options: [dev]
+      default: dev
+
+
+permissions:
+  contents: read
+  id-token: write   # AWS OIDC
+  pull-requests: write
+
+env:
+  TF_VERSION: "1.10.0"
+  AWS_REGION: "eu-west-2"
+  TF_IN_AUTOMATION: "true"
+  ENV_NAME: "dev"
+  TFVARS_FILE: "envs/dev/terraform.tfvars"
+
+jobs:
+  validate_and_plan:
+    name: Validate, Lint, Snyk, Plan (Dev)
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ---- Terraform toolchain ----
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Debug working directory
+        run: |
+          pwd
+          ls -la
+
+      - name: Terraform fmt (check)
+        working-directory: terraform
+        run: terraform fmt -check -recursive
+
+
+      # ---- TFLint ----
+      - name: Setup TFLint
+        uses: terraform-linters/setup-tflint@v4
+        with:
+          tflint_version: v0.50.3
+
+      - name: TFLint init
+        working-directory: terraform
+        run: tflint --init
+
+      - name: TFLint
+        working-directory: terraform
+        run: tflint -f compact
+
+      # ---- Snyk (IaC scan) ----
+      - name: Setup Snyk
+        uses: snyk/actions/setup@master
+
+      - name: Snyk IaC test
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        run: snyk iac test --org=${{ secrets.SNYK_ORG }} --severity-threshold=high
+      - name: Debug GitHub context
+        run: |
+         echo "event=${{ github.event_name }}"
+         echo "ref=${{ github.ref }}"
+         echo "ref_name=${{ github.ref_name }}"
+
+      # ---- AWS OIDC login for plan 
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEV_ROLE_ARN1 }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Clean terraform dir
+        working-directory: terraform
+        run: rm -rf .terraform
+
+      - name: Terraform init (Dev)
+        run:  |
+          cd terraform/envs/dev
+          terraform init -reconfigure -input=false -backend-config="backend.hcl"
+
+
+      - name: Terraform plan (Dev)
+        run:  |
+         cd terraform/envs/dev
+
+         terraform plan -no-color -out=tfplan 
+
+
+      - name: Upload plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan-dev1
+          path: terraform/envs/dev/tfplan
+
+  apply:
+    name: Apply (Dev)
+    runs-on: ubuntu-latest
+    environment: dev
+    needs: validate_and_plan
+    if: >
+      (github.ref == 'refs/heads/dev' && github.event_name == 'push')
+      || github.event_name == 'workflow_dispatch'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEV_ROLE_ARN1 }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Terraform init (Dev)
+        run:  |
+          cd terraform/envs/dev
+          terraform init -reconfigure -input=false -backend-config="backend.hcl"
+
+      - name: Download tfplan artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan-dev1
+          path: terraform/envs/dev
+          
+
+      - name: Terraform apply (Dev)
+        run: |
+          cd terraform/envs/dev
+          terraform apply -auto-approve tfplan

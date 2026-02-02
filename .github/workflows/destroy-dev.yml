@@ -1,0 +1,52 @@
+name: Destroy dev
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type destroy-dev to confirm"
+        required: true
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  TF_VERSION: "1.10.0"
+  AWS_REGION: "eu-west-2"  
+
+concurrency:
+  group: terraform-dev-destroy
+  cancel-in-progress: false
+
+
+
+jobs:
+  destroy:
+    if: ${{ github.event.inputs.confirm == 'destroy-dev' }}
+    runs-on: ubuntu-latest
+    environment: dev
+
+    steps:
+
+     # ---- AWS OIDC login 
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEV_ROLE_ARN1 }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - uses: actions/checkout@v4
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.10.0
+
+      - name: Terraform Init
+        run: |
+          cd terraform/envs/dev
+          terraform init -reconfigure -input=false -backend-config="backend.hcl"
+
+      - name: Terraform Destroy
+        run: |
+          cd terraform/envs/dev
+          terraform destroy -auto-approve
