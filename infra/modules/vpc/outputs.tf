@@ -19,5 +19,5 @@ output "nat_gateway_id" {
 }
 
 output "private_route_table_ids" {
-  value = aws_route_table.private.id
+  value = [aws_route_table.private.id]
 }
