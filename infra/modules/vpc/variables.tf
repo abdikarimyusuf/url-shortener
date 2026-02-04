@@ -21,7 +21,7 @@ variable "private_subnets" {
 
 variable "enable_nat_gateway" {
   type    = bool
-  default = true
+  default = false
 }
 
 
