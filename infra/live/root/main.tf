@@ -151,7 +151,7 @@ module "ecs_cluster" {
   security_group   = [module.ecs_sg.sg_id]
   target_group_arn = module.alb.target_group_arn
 
-  conatiner_log_group = module.aws_cloudwatch_log_group.log_group_name
+  container_log_group = module.aws_cloudwatch_log_group.log_group_name
 
   #tags = local.tags
 }
