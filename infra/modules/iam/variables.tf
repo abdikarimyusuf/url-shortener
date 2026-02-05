@@ -1,9 +1,7 @@
 variable "cluster_name" {
-  default = "threatsc-pro"
+  default = "URL_SHORTENER"
 }
-variable "db_secret_arn" {
-  description = "Secrets Manager ARN for DB credentials"
-  type        = string
+variable "dynamodb_table_arn"{
+type = string
 }
-
 

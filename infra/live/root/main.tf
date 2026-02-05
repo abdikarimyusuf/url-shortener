@@ -50,7 +50,7 @@ module "ecs_sg" {
   vpc_id = module.vpc.vpc_id
 
   ingress_rules = [
-    { protocol = "tcp", from_port = var.frontend_port, to_port = var.frontend_port, security_groups = [module.alb_sg.sg_id] }
+    { protocol = "tcp", from_port = var.ecs_port, to_port = var.ecs_port, security_groups = [module.alb_sg.sg_id] }
   ]
 
   #tags = local.tags
@@ -108,7 +108,7 @@ module "alb" {
   subnets         = module.vpc.public_subnet_ids
   security_groups = [module.alb_sg.sg_id]
   vpc_id          = module.vpc.vpc_id
-  target_port     = var.frontend_port
+  target_port     = var.ecs_port
 
 
   certificate_arn = module.acm.certificate_arn
@@ -120,7 +120,7 @@ module "iam" {
   source = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/iam?ref=main"
 
   cluster_name  = local.name_prefix
-  db_secret_arn = module.database.secret_arn
+  dynamodb_table_arn = module.dynamodb.table_arn
   #tags          = local.tags
 }
 
@@ -151,7 +151,7 @@ module "ecs_cluster" {
   security_group   = [module.ecs_sg.sg_id]
   target_group_arn = module.alb.target_group_arn
 
-  container_log_group = module.aws_cloudwatch_log_group.log_group_name
+  conatiner_log_group = module.aws_cloudwatch_log_group.log_group_name
 
   #tags = local.tags
 }
@@ -188,7 +188,7 @@ module "dynamodb" {
   # Optional: enable TTL if you want
   # ttl_attribute = "expires_at"
 
-  tags = local.tags
+  #tags = local.tags
 }
 
 

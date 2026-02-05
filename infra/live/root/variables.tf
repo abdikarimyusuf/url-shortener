@@ -3,6 +3,10 @@ variable "region" {
   description = "AWS region"
   default     = "eu-west-2"
 }
+variable "ecs_port" {
+  type = number
+  default = 80
+}
 
 variable "project" {
   type        = string
@@ -57,7 +61,7 @@ variable "image" {
 }
 
 # Ports
-variable "conatiner_port" {
+variable "container_port" {
   type    = number
   default = 8080
 }
