@@ -48,31 +48,23 @@ resource "aws_ecs_task_definition" "task" {
 
   container_definitions = jsonencode([
     {
-      name      = "backend"
-      image     = var.backend_image
+      name      = var.name
+      image     = var.image
       essential = true
 
-      secrets = [
-        {
-          name      = "MEMOS_DSN"
-          valueFrom = "${var.database_secret_arn}:DATABASE_URL::"
-        }
-      ]
-
       environment = [
-        { name = "memos_MODE", value = "prod" },
-        { name = "MEMOS_DRIVER", value = "postgres" }
+    { name = "TABLE_NAME", value = var.TABLE_NAME }
       ]
       portMappings = [
         {
-          containerPort = var.backend_port
+          containerPort = var.container_port
           protocol      = "tcp"
         }
       ]
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          awslogs-group         = var.backend_log_group
+          awslogs-group         = var.container_log_group
           awslogs-region        = var.region
           awslogs-stream-prefix = "ecs"
         }
@@ -81,25 +73,6 @@ resource "aws_ecs_task_definition" "task" {
     },
 
 
-    {
-      name      = "frontend"
-      image     = var.frontend_image
-      essential = true
-
-      portMappings = [
-        { containerPort = var.frontend_port, protocol = "tcp" }
-      ]
-
-
-      logConfiguration = {
-        logDriver = "awslogs"
-        options = {
-          awslogs-region        = var.region
-          awslogs-group         = var.frontend_log_group
-          awslogs-stream-prefix = "ecs"
-        }
-      }
-    }
   ])
 
 

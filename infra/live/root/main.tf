@@ -15,7 +15,7 @@ locals {
 
 # Networkk
 module "vpc" {
-  source = "../../modules/vpc"
+  source =  "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/vpc?ref=main"
 
   cidr               = var.vpc_cidr
   public_subnets     = var.public_subnets
@@ -30,7 +30,7 @@ module "vpc" {
 
 # Security Groups 
 module "alb_sg" {
-  source = "../modules/security"
+  source = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/security?ref=main"
 
   name   = "${local.name_prefix}-alb-sg"
   vpc_id = module.vpc.vpc_id
@@ -44,7 +44,7 @@ module "alb_sg" {
 }
 
 module "ecs_sg" {
-  source = "../../modules/security"
+  source =  "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/security?ref=main"
 
   name   = "${local.name_prefix}-ecs-sg"
   vpc_id = module.vpc.vpc_id
@@ -56,14 +56,15 @@ module "ecs_sg" {
   #tags = local.tags
 }
 
-module "rds_sg" {
-  source = "../../modules/security"
 
-  name   = "${local.name_prefix}-rds-sg"
+module "endpoints_sg" {
+  source = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/security?ref=main"
+
+  name   = "${local.name_prefix}-endpoints-sg"
   vpc_id = module.vpc.vpc_id
 
   ingress_rules = [
-    { protocol = "tcp", from_port = 5432, to_port = 5432, security_groups = [module.ecs_sg.sg_id] }
+    { protocol = "tcp", from_port = 443, to_port = 443, security_groups = [var.vpc_cidr] }
   ]
 
   #tags = local.tags
@@ -71,14 +72,14 @@ module "rds_sg" {
 
 #  Logging 
 module "aws_cloudwatch_log_group" {
-  source = "../../modules/logs"
+  source = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/logs?ref=main"
   name   = "${local.name_prefix}-logs"
   #tags   = local.tags
 }
 
 # ECR
 module "ecr" {
-  source = "../../modules/ecr"
+  source =  "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/ecr?ref=main"
 
   repository_name = "${local.name_prefix}-app"
   #tags            = local.tags
@@ -91,7 +92,7 @@ data "aws_route53_zone" "main" {
 }
 
 module "acm" {
-  source = "../../modules/acm"
+  source =  "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/acm?ref=main"
 
   domain_name = var.domain_name
   zone_id     = data.aws_route53_zone.main.zone_id
@@ -101,7 +102,7 @@ module "acm" {
 
 # 
 module "alb" {
-  source = "../../modules/alb"
+  source =  "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/alb?ref=main"
 
   name            = "${local.name_prefix}-alb"
   subnets         = module.vpc.public_subnet_ids
@@ -115,31 +116,8 @@ module "alb" {
   tags = local.tags
 }
 
-module "database" {
-  source      = "../../modules/rds"
-  name_prefix = "${local.name_prefix}-db"
-
-  env = var.env
-
-  engine         = "postgres"
-  engine_version = var.db_engine_version
-  instance_class = var.db_instance_class
-  db_name        = var.db_name
-  db_username    = var.db_username
-
-  subnet_ids         = module.vpc.db_subnet_ids
-  security_group_ids = [module.rds_sg.sg_id]
-
-  multi_az         = var.db_multi_az
-  backup_retention = var.db_backup_retention
-
-  secret_name = "${local.name_prefix}-db-credential"
-
-  #tags = local.tags
-}
-
 module "iam" {
-  source = "../../modules/iam"
+  source = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/iam?ref=main"
 
   cluster_name  = local.name_prefix
   db_secret_arn = module.database.secret_arn
@@ -147,7 +125,7 @@ module "iam" {
 }
 
 module "ecs_cluster" {
-  source = "../../modules/ecs"
+  source = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/ecs?ref=main"
 
   cluster_name = "${local.name_prefix}-cluster"
   service_name = "${local.name_prefix}-service"
@@ -162,25 +140,24 @@ module "ecs_cluster" {
   task_role_arn      = module.iam.ecs_task_role_arn
   region             = var.region
 
-  frontend_image = var.frontend_image
-  backend_image  = var.backend_image
-  frontend_port  = var.frontend_port
-  backend_port   = var.backend_port
+  image = var.image
+  container_port = var.container_port
 
-  database_secret_arn = module.database.secret_arn
+  TABLE_NAME = module.dynamodb.table_name
+
+
 
   subnets          = module.vpc.private_subnet_ids
   security_group   = [module.ecs_sg.sg_id]
   target_group_arn = module.alb.target_group_arn
 
-  frontend_log_group = module.aws_cloudwatch_log_group.log_group_name
-  backend_log_group  = module.aws_cloudwatch_log_group.log_group_name
+  container_log_group = module.aws_cloudwatch_log_group.log_group_name
 
   #tags = local.tags
 }
 
 module "r53" {
-  source = "../../modules/route53"
+  source = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/route53?ref=main"
 
   domain_name = trimsuffix(data.aws_route53_zone.main.name, ".")
   zone_id     = data.aws_route53_zone.main.zone_id
@@ -192,3 +169,26 @@ module "r53" {
 
   # tags = local.tags
 }
+
+module "endpoints" {
+  source                 = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/endpoints?ref=main"
+  vpc_id                 = module.vpc.vpc_id
+  private_subnet_ids      = module.vpc.private_subnet_ids
+  private_route_table_ids = module.vpc.private_route_table_ids
+  endpoints_sg_id   = module.endpoints_sg.sg_id
+
+}
+
+module "dynamodb" {
+  source      = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/dynamodb?ref=main"
+
+  name        = "${local.name_prefix}-ddb"
+  environment = var.environment
+
+  # Optional: enable TTL if you want
+  # ttl_attribute = "expires_at"
+
+  tags = local.tags
+}
+
+

@@ -7,7 +7,7 @@ variable "region" {
 variable "project" {
   type        = string
   description = "Project name (used in naming and tags)"
-  default     = "memos"
+  default     = "URL-SHORTERNER"
 }
 
 variable "environment" {
@@ -17,7 +17,7 @@ variable "environment" {
 
 variable "domain_name" {
   type        = string
-  description = "Base domain, e.g. abdikarim.co.uk"
+  description = "Base domain, "
 }
 
 variable "sub_domain_name" {
@@ -48,28 +48,20 @@ variable "availability_zones" {
 
 variable "enable_nat_gateway" {
   type    = bool
-  default = true
+  default = false
 }
 
 # App images
-variable "frontend_image" {
-  type = string
-}
-
-variable "backend_image" {
+variable "image" {
   type = string
 }
 
 # Ports
-variable "frontend_port" {
+variable "conatiner_port" {
   type    = number
-  default = 80
+  default = 8080
 }
 
-variable "backend_port" {
-  type    = number
-  default = 8081
-}
 
 # ECS sizing
 variable "ecs_cpu" {
@@ -85,42 +77,6 @@ variable "ecs_memory" {
 variable "ecs_desired_count" {
   type    = number
   default = 1
-}
-
-# DB
-variable "db_name" {
-  type    = string
-  default = "memos"
-}
-
-variable "db_username" {
-  type    = string
-  default = "memos"
-}
-
-variable "db_engine_version" {
-  type    = string
-  default = "15"
-}
-
-variable "db_instance_class" {
-  type    = string
-  default = "db.t3.micro"
-}
-
-variable "db_multi_az" {
-  type    = bool
-  default = false
-}
-
-variable "db_backup_retention" {
-  type    = number
-  default = 1
-}
-
-variable "db_deletion_protection" {
-  type    = bool
-  default = false
 }
 
 # Optional extra tagss
