@@ -28,7 +28,7 @@ variable "TABLE_NAME" {
 }
 
 
-variable "conatiner_log_group" { type = string }
+variable "container_log_group" { type = string }
 
 
 
