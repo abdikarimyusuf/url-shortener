@@ -115,6 +115,13 @@ module "alb" {
 
   tags = local.tags
 }
+module "waf" {
+  source      = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/waf?ref=main"
+  name_prefix  ="${local.name_prefix}-waf"
+  alb_arn = module.alb.alb_arn
+  rate_limit = 100 # per ip
+
+}
 
 module "iam" {
   source = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/iam?ref=main"
