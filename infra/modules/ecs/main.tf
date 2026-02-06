@@ -26,7 +26,7 @@ resource "aws_ecs_service" "svc" {
   load_balancer {
     target_group_arn = var.target_group_arn
     container_name   = "frontend"
-    container_port   = var.frontend_port
+    container_port   = var.container_port
   }
 
 
