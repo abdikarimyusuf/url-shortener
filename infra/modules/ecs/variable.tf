@@ -26,6 +26,10 @@ variable "service_name" {
 variable "TABLE_NAME" {
   type = string
 }
+variable "container_name" {
+  type = string 
+  default = "url-shortener"
+}
 
 
 variable "container_log_group" { type = string }

@@ -25,7 +25,7 @@ resource "aws_ecs_service" "svc" {
 
   load_balancer {
     target_group_arn = var.target_group_arn
-    container_name   = "frontend"
+    container_name   = var.container_name
     container_port   = var.container_port
   }
 
@@ -48,7 +48,7 @@ resource "aws_ecs_task_definition" "task" {
 
   container_definitions = jsonencode([
     {
-      name  = "url-shortener"
+      name  = var.container_name
       image     = var.image
       essential = true
 
