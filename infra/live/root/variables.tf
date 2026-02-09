@@ -5,7 +5,7 @@ variable "region" {
 }
 variable "ecs_port" {
   type = number
-  default = 80
+  default = 8080
 }
 
 variable "project" {
