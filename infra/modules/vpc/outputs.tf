@@ -10,13 +10,8 @@ output "private_subnet_ids" {
   value = aws_subnet.private[*].id
 }
 
-output "db_subnet_ids" {
-  value = var.enable_db_tier ? aws_subnet.db[*].id : []
-}
 
-output "nat_gateway_id" {
-  value = var.enable_nat_gateway ? aws_nat_gateway.ngw[0].id : null
-}
+
 
 output "private_route_table_ids" {
   value = [aws_route_table.private.id]

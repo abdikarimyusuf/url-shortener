@@ -46,22 +46,6 @@ resource "aws_subnet" "private" {
     tier = "application"
   })
 }
-
-resource "aws_subnet" "db" {
-  count      = var.enable_db_tier ? length(var.db_subnets) : 0
-  vpc_id     = aws_vpc.vpc.id
-  cidr_block = var.db_subnets[count.index]
-
-  availability_zone = var.availability_zones[count.index]
-
-  tags = merge({
-    Name = "${var.name_prefix}-db-${count.index}"
-    tier = "database"
-  })
-
-}
-
-
 # Private Route Table
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.vpc.id
