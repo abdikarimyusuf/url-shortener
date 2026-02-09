@@ -23,11 +23,11 @@ permissions:
   pull-requests: write
 
 env:
-  TF_VERSION: "1.10.0"
-  AWS_REGION: "eu-west-2"
-  TF_IN_AUTOMATION: "true"
-  ENV_NAME: "dev"
-  TFVARS_FILE: "envs/dev/terraform.tfvars"
+  AWS_REGION: eu-west-2
+  ENV_NAME: dev
+  TG_DIR: infra/live/dev
+  APP_DIR: app
+  ECR_REPO: url-shortener
 
 jobs:
   validate_and_plan:
@@ -39,35 +39,53 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+
+       # ---- AWS OIDC login for plan 
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEV_ROLE_ARN1 }}
+          aws-region: ${{ env.AWS_REGION }}
+
       # ---- Terraform toolchain ----
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: ${{ env.TF_VERSION }}
+          terraform_version: "1.10.0"
+      - name: Setup Terragrunt
+        uses: autero1/action-terragrunt@v3
+        with:
+          terragrunt-version: 0.59.8
 
-      - name: Debug working directory
-        run: |
-          pwd
-          ls -la
+      - name: Terragrunt init
+        working-directory: ${{ env.TG_DIR }}
+        run: terragrunt init
+
+      #- name: Debug working directory
+       # run: |
+       #   pwd
+        #  ls -la
 
       - name: Terraform fmt (check)
-        working-directory: terraform
+        working-directory: infra
         run: terraform fmt -check -recursive
+
 
 
       # ---- TFLint ----
       - name: Setup TFLint
         uses: terraform-linters/setup-tflint@v4
         with:
-          tflint_version: v0.50.3
+           tflint_version: v0.50.3
 
       - name: TFLint init
-        working-directory: terraform
+        working-directory: infra
         run: tflint --init
 
       - name: TFLint
-        working-directory: terraform
-        run: tflint -f compact
+        working-directory: infra
+        run: tflint -f compact --recursive
+
 
       # ---- Snyk (IaC scan) ----
       - name: Setup Snyk
@@ -84,34 +102,18 @@ jobs:
          echo "ref=${{ github.ref }}"
          echo "ref_name=${{ github.ref_name }}"
 
-      # ---- AWS OIDC login for plan 
-      - name: Configure AWS credentials (OIDC)
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ secrets.AWS_DEV_ROLE_ARN1 }}
-          aws-region: ${{ env.AWS_REGION }}
-      - name: Clean terraform dir
-        working-directory: terraform
-        run: rm -rf .terraform
+     
 
-      - name: Terraform init (Dev)
-        run:  |
-          cd terraform/envs/dev
-          terraform init -reconfigure -input=false -backend-config="backend.hcl"
-
-
-      - name: Terraform plan (Dev)
-        run:  |
-         cd terraform/envs/dev
-
-         terraform plan -no-color -out=tfplan 
+      - name: Terragrunt plan
+        working-directory: ${{ env.TG_DIR }}
+        run: terragrunt plan -no-color -out=tfplan 
 
 
       - name: Upload plan artifact
         uses: actions/upload-artifact@v4
         with:
           name: tfplan-dev1
-          path: terraform/envs/dev/tfplan
+          path: infra/live/dev/tfplan
 
   apply:
     name: Apply (Dev)
@@ -126,10 +128,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+      - name: Setup Terragrunt
+        uses: autero1/action-terragrunt@v3
         with:
-          terraform_version: ${{ env.TF_VERSION }}
+          terragrunt-version: 0.59.8
 
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
@@ -137,19 +139,18 @@ jobs:
           role-to-assume: ${{ secrets.AWS_DEV_ROLE_ARN1 }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Terraform init (Dev)
-        run:  |
-          cd terraform/envs/dev
-          terraform init -reconfigure -input=false -backend-config="backend.hcl"
-
       - name: Download tfplan artifact
         uses: actions/download-artifact@v4
         with:
           name: tfplan-dev1
-          path: terraform/envs/dev
+          path: infra/live/dev/
+
+      - name: Terragrunt init
+        working-directory: ${{ env.TG_DIR }}
+        run: terragrunt init
           
 
-      - name: Terraform apply (Dev)
+      - name: Terragrunt apply (Dev)
         run: |
-          cd terraform/envs/dev
-          terraform apply -auto-approve tfplan
+          cd infra/live/dev
+          terragrunt apply -auto-approve tfplan
