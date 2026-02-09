@@ -19,7 +19,7 @@ resource "aws_lb_target_group" "tg" {
   health_check {
     enabled             = true
     protocol            = "HTTP"
-    path                = "/health"
+    path                = "/healthz"
     port                = "traffic-port"
     healthy_threshold   = 2
     unhealthy_threshold = 2
