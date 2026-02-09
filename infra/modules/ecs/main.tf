@@ -48,6 +48,7 @@ resource "aws_ecs_task_definition" "task" {
 
   container_definitions = jsonencode([
     {
+      name  = "url-shortener"
       image     = var.image
       essential = true
 

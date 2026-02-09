@@ -64,7 +64,7 @@ module "endpoints_sg" {
   vpc_id = module.vpc.vpc_id
 
   ingress_rules = [
-    { protocol = "tcp", from_port = 443, to_port = 443, security_groups = [var.vpc_cidr] }
+    { protocol = "tcp", from_port = 443, to_port = 443, cidr_blocks = [var.vpc_cidr] }
   ]
 
   #tags = local.tags
