@@ -57,7 +57,7 @@ variable "enable_nat_gateway" {
 
 # App images
 variable "image" {
-  type = string
+  type    = string
   default = "561041808710.dkr.ecr.eu-west-2.amazonaws.com/url-shortener:latest2"
 }
 
