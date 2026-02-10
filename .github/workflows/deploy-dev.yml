@@ -110,7 +110,14 @@ jobs:
 
       - name: Terragrunt inputs debug
         working-directory: ${{ env.TG_DIR }}
-        run: terragrunt render-json --terragrunt-non-interactive
+        run: |
+            terragrunt render-json --terragrunt-non-interactive > tg.json
+            jq -r '.inputs | {
+            availability_zones,
+            public_subnets,
+            private_subnets,
+            db_subnets
+             }' tg.json
 
      
 
@@ -175,7 +182,14 @@ jobs:
              terragrunt render-json --terragrunt-non-interactive | head -n 200
       - name: Terragrunt inputs debug
         working-directory: ${{ env.TG_DIR }}
-        run: terragrunt render-json --terragrunt-non-interactive
+        run: |
+            terragrunt render-json --terragrunt-non-interactive > tg.json
+            jq -r '.inputs | {
+            availability_zones,
+            public_subnets,
+            private_subnets,
+            db_subnets
+             }' tg.json
 
       - name: Terragrunt apply (Dev)
         working-directory: ${{ env.TG_DIR }}
