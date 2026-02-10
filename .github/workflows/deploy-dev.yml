@@ -111,13 +111,14 @@ jobs:
       - name: Terragrunt inputs debug
         working-directory: ${{ env.TG_DIR }}
         run: |
+            set -euxo pipefail
             terragrunt render-json --terragrunt-non-interactive > tg.json
-            jq -r '.inputs | {
-            availability_zones,
-            public_subnets,
-            private_subnets,
-            db_subnets
-             }' tg.json
+            echo "tg.json size:"
+            wc -c tg.json
+            echo "First 40 lines of tg.json:"
+            sed -n '1,40p' tg.json
+            echo "Inputs we care about:"
+            jq '.inputs | {availability_zones, public_subnets, private_subnets, db_subnets}' tg.json
 
      
 
@@ -183,13 +184,14 @@ jobs:
       - name: Terragrunt inputs debug
         working-directory: ${{ env.TG_DIR }}
         run: |
+            set -euxo pipefail
             terragrunt render-json --terragrunt-non-interactive > tg.json
-            jq -r '.inputs | {
-            availability_zones,
-            public_subnets,
-            private_subnets,
-            db_subnets
-             }' tg.json
+            echo "tg.json size:"
+            wc -c tg.json
+            echo "First 40 lines of tg.json:"
+            sed -n '1,40p' tg.json
+            echo "Inputs we care about:"
+            jq '.inputs | {availability_zones, public_subnets, private_subnets, db_subnets}' tg.json
 
       - name: Terragrunt apply (Dev)
         working-directory: ${{ env.TG_DIR }}
