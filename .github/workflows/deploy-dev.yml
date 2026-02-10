@@ -163,7 +163,7 @@ jobs:
         run: terragrunt init --terragrunt-non-interactive
 
       - name: Debug Terraform variable env
-          run: env | sort | grep '^TF_VAR_' || true
+        run: env | sort | grep '^TF_VAR_' || true
           
 
       - name: Terragrunt apply (Dev)
