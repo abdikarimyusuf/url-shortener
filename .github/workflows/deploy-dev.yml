@@ -149,6 +149,11 @@ jobs:
         with:
           name: tfplan-dev1
           path: ${{ env.TG_DIR }}
+          
+      - name: Debug working directory
+        run: |
+          pwd
+          ls -la
 
       - name: Terragrunt init
         working-directory: ${{ env.TG_DIR }}
