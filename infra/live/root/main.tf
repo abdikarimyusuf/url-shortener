@@ -15,7 +15,7 @@ locals {
 
 # Networkk
 module "vpc" {
-  source =  "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/vpc?ref=main"
+  source = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/vpc?ref=main"
 
   cidr               = var.vpc_cidr
   public_subnets     = var.public_subnets
@@ -44,7 +44,7 @@ module "alb_sg" {
 }
 
 module "ecs_sg" {
-  source =  "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/security?ref=main"
+  source = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/security?ref=main"
 
   name   = "${local.name_prefix}-ecs-sg"
   vpc_id = module.vpc.vpc_id
@@ -79,7 +79,7 @@ module "aws_cloudwatch_log_group" {
 
 # ECR
 module "ecr" {
-  source =  "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/ecr?ref=main"
+  source = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/ecr?ref=main"
 
   repository_name = "${local.name_prefix}-app"
   #tags            = local.tags
@@ -92,7 +92,7 @@ data "aws_route53_zone" "main" {
 }
 
 module "acm" {
-  source =  "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/acm?ref=main"
+  source = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/acm?ref=main"
 
   domain_name = var.domain_name
   zone_id     = data.aws_route53_zone.main.zone_id
@@ -102,7 +102,7 @@ module "acm" {
 
 # 
 module "alb" {
-  source =  "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/alb?ref=main"
+  source = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/alb?ref=main"
 
   name            = "${local.name_prefix}-alb"
   subnets         = module.vpc.public_subnet_ids
@@ -117,16 +117,16 @@ module "alb" {
 }
 module "waf" {
   source      = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/waf?ref=main"
-  name_prefix  ="${local.name_prefix}-waf"
-  alb_arn = module.alb.alb_arn
-  rate_limit = 100 # per ip
+  name_prefix = "${local.name_prefix}-waf"
+  alb_arn     = module.alb.alb_arn
+  rate_limit  = 100 # per ip
 
 }
 
 module "iam" {
   source = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/iam?ref=main"
 
-  cluster_name  = local.name_prefix
+  cluster_name       = local.name_prefix
   dynamodb_table_arn = module.dynamodb.table_arn
   #tags          = local.tags
 }
@@ -147,7 +147,7 @@ module "ecs_cluster" {
   task_role_arn      = module.iam.ecs_task_role_arn
   region             = var.region
 
-  image = var.image
+  image          = var.image
   container_port = var.container_port
 
   TABLE_NAME = module.dynamodb.table_name
@@ -178,16 +178,16 @@ module "r53" {
 }
 
 module "endpoints" {
-  source                 = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/endpoints?ref=main"
-  vpc_id                 = module.vpc.vpc_id
+  source                  = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/endpoints?ref=main"
+  vpc_id                  = module.vpc.vpc_id
   private_subnet_ids      = module.vpc.private_subnet_ids
   private_route_table_ids = module.vpc.private_route_table_ids
-  endpoints_sg_id   = module.endpoints_sg.sg_id
+  endpoints_sg_id         = module.endpoints_sg.sg_id
 
 }
 
 module "dynamodb" {
-  source      = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/dynamodb?ref=main"
+  source = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/dynamodb?ref=main"
 
   name        = "${local.name_prefix}-ddb"
   environment = var.environment

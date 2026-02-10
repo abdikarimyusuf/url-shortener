@@ -12,8 +12,8 @@ locals {
 
 
 
- interface_services_optional = var.enable_secretsmanager ? ["secretsmanager"] : []
- interface_services = concat(local.interface_services_base, local.interface_services_optional)
+  interface_services_optional = var.enable_secretsmanager ? ["secretsmanager"] : []
+  interface_services          = concat(local.interface_services_base, local.interface_services_optional)
 
   # Full service names like com.amazonaws.eu-west-2.ecr.api
   interface_service_names = [
@@ -49,11 +49,11 @@ resource "aws_vpc_endpoint" "s3" {
 resource "aws_vpc_endpoint" "interface" {
   for_each = toset(local.interface_service_names)
 
-  vpc_id              = var.vpc_id
-  service_name        = each.value
-  vpc_endpoint_type   = "Interface"
-  subnet_ids          = var.private_subnet_ids
-  security_group_ids  = [var.endpoints_sg_id]
+  vpc_id             = var.vpc_id
+  service_name       = each.value
+  vpc_endpoint_type  = "Interface"
+  subnet_ids         = var.private_subnet_ids
+  security_group_ids = [var.endpoints_sg_id]
 
   private_dns_enabled = true
 

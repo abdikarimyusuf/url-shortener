@@ -15,6 +15,6 @@ variable "rate_limit" {
 }
 
 variable "tags" {
-  type        = map(string)
-  default     = {}
+  type    = map(string)
+  default = {}
 }

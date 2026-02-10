@@ -42,8 +42,8 @@ data "aws_iam_policy_document" "dynamodb_access" {
 
 resource "aws_iam_role_policy" "dynamodb_inline" {
   name   = "${var.cluster_name}-dynamodb-inline"
-  role       = aws_iam_role.ecs_task_role.id
-  policy =data.aws_iam_policy_document.dynamodb_access.json
+  role   = aws_iam_role.ecs_task_role.id
+  policy = data.aws_iam_policy_document.dynamodb_access.json
 }
 
 

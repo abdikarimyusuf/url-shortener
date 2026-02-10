@@ -17,9 +17,9 @@ resource "aws_wafv2_web_acl" "waf" {
     name     = "AWSManagedRulesCommonRuleSet"
     priority = 10
 
-    override_action { 
-        none {} 
-        }
+    override_action {
+      none {}
+    }
 
     statement {
       managed_rule_group_statement {
@@ -40,9 +40,9 @@ resource "aws_wafv2_web_acl" "waf" {
     name     = "AWSManagedRulesKnownBadInputsRuleSet"
     priority = 20
 
-    override_action { 
-        none {}
-         }
+    override_action {
+      none {}
+    }
 
     statement {
       managed_rule_group_statement {
@@ -63,9 +63,9 @@ resource "aws_wafv2_web_acl" "waf" {
     name     = "AWSManagedRulesSQLiRuleSet"
     priority = 30
 
-    override_action { 
-        none {} 
-        }
+    override_action {
+      none {}
+    }
 
     statement {
       managed_rule_group_statement {
@@ -88,9 +88,9 @@ resource "aws_wafv2_web_acl" "waf" {
       name     = "RateLimitPerIP"
       priority = 40
 
-      action { 
+      action {
         block {}
-         }
+      }
 
       statement {
         rate_based_statement {

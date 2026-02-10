@@ -48,12 +48,12 @@ resource "aws_ecs_task_definition" "task" {
 
   container_definitions = jsonencode([
     {
-      name  = var.container_name
+      name      = var.container_name
       image     = var.image
       essential = true
 
       environment = [
-    { name = "TABLE_NAME", value = var.TABLE_NAME }
+        { name = "TABLE_NAME", value = var.TABLE_NAME }
       ]
       portMappings = [
         {

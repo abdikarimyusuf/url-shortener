@@ -4,7 +4,7 @@ variable "region" {
   default     = "eu-west-2"
 }
 variable "ecs_port" {
-  type = number
+  type    = number
   default = 8080
 }
 

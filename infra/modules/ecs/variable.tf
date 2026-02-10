@@ -27,7 +27,7 @@ variable "TABLE_NAME" {
   type = string
 }
 variable "container_name" {
-  type = string 
+  type    = string
   default = "url-shortener"
 }
 

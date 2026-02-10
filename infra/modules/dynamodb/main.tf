@@ -27,6 +27,6 @@ resource "aws_dynamodb_table" "ddb" {
   }
 
   #tags = merge(var.tags, {
-   # Name = local.table_name
+  # Name = local.table_name
   #})
 }
