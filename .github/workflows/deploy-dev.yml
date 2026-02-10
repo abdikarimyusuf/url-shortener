@@ -113,7 +113,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: tfplan-dev1
-          path: ${{ env.TG_DIR }}
+          path: ${{ env.TG_DIR }}/tfplan
           if-no-files-found: error
 
   apply:
