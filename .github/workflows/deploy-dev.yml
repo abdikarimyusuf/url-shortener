@@ -156,6 +156,5 @@ jobs:
           
 
       - name: Terragrunt apply (Dev)
-        run: |
-          cd infra/live/dev
-          terragrunt apply --terragrunt-non-interactive -auto-approve tfplan
+        working-directory: ${{ env.TG_DIR }}
+        run: terragrunt apply --terragrunt-non-interactive -auto-approve tfplan-dev1
