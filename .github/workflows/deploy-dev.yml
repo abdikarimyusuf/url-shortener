@@ -102,8 +102,11 @@ jobs:
          echo "ref=${{ github.ref }}"
          echo "ref_name=${{ github.ref_name }}"
 
-      - name: Debug Terraform variable env
-        run: env | sort | grep '^TF_VAR_' || true
+
+      - name: Terragrunt debug (what inputs/vars are used)
+        working-directory: ${{ env.TG_DIR }}
+        run: |
+             terragrunt render-json --terragrunt-non-interactive | head -n 200
 
      
 
@@ -161,10 +164,11 @@ jobs:
       - name: Terragrunt init
         working-directory: ${{ env.TG_DIR }}
         run: terragrunt init --terragrunt-non-interactive
-
-      - name: Debug Terraform variable env
-        run: env | sort | grep '^TF_VAR_' || true
           
+      - name: Terragrunt debug (what inputs/vars are used)
+        working-directory: ${{ env.TG_DIR }}
+        run: |
+             terragrunt render-json --terragrunt-non-interactive | head -n 200
 
       - name: Terragrunt apply (Dev)
         working-directory: ${{ env.TG_DIR }}
