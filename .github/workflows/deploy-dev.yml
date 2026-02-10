@@ -106,7 +106,7 @@ jobs:
 
       - name: Terragrunt plan
         working-directory: ${{ env.TG_DIR }}
-        run: terragrunt plan --terragrunt-non-interactive -no-color -out=tfplan 
+        run: terragrunt plan --terragrunt-non-interactive -no-color -out="$GITHUB_WORKSPACE/${{ env.TG_DIR }}/tfplan" 
 
 
       - name: Upload plan artifact
