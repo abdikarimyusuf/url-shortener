@@ -59,7 +59,7 @@ jobs:
 
       - name: Terragrunt init
         working-directory: ${{ env.TG_DIR }}
-        run: terragrunt init
+        run: terragrunt init --terragrunt-non-interactive
 
       #- name: Debug working directory
        # run: |
@@ -106,7 +106,7 @@ jobs:
 
       - name: Terragrunt plan
         working-directory: ${{ env.TG_DIR }}
-        run: terragrunt plan -no-color -out=tfplan 
+        run: terragrunt plan --terragrunt-non-interactive -no-color -out=tfplan 
 
 
       - name: Upload plan artifact
@@ -131,7 +131,7 @@ jobs:
       - name: Setup Terragrunt
         uses: autero1/action-terragrunt@v3
         with:
-          terragrunt-version: 0.59.8
+          terragrunt-version: "0.54.22"
 
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
@@ -147,10 +147,10 @@ jobs:
 
       - name: Terragrunt init
         working-directory: ${{ env.TG_DIR }}
-        run: terragrunt init
+        run: terragrunt init --terragrunt-non-interactive
           
 
       - name: Terragrunt apply (Dev)
         run: |
           cd infra/live/dev
-          terragrunt apply -auto-approve tfplan
+          terragrunt apply --terragrunt-non-interactive -auto-approve tfplan
