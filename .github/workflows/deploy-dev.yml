@@ -84,7 +84,7 @@ jobs:
 
       - name: TFLint
         working-directory: infra
-        run: tflint -f compact --recursive
+        run:  tflint --recursive --force
 
 
       # ---- Snyk (IaC scan) ----
