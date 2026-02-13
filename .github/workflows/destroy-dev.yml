@@ -11,9 +11,9 @@ permissions:
   contents: read
 
 env:
-  TF_VERSION: ""1.9.8""
+  TF_VERSION: "1.9.8"
   AWS_REGION: "eu-west-2"  
-  Tr_VERSION: ""0.54.22""
+  Tr_VERSION: "0.54.22"
   TG_DIR: infra/live/dev
 
 concurrency:
