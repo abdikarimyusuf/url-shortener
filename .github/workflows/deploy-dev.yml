@@ -162,11 +162,11 @@ jobs:
           role-to-assume: ${{ secrets.AWS_DEV_ROLE_ARN1 }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Download tfplan artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: tfplan-dev1
-          path: ${{ env.TG_DIR }}
+     # - name: Download tfplan artifact
+       #    uses: actions/download-artifact@v4
+       #    with:
+       #      name: tfplan-dev1
+       #      path: ${{ env.TG_DIR }}
 
       - name: Debug working directory
         run: |
@@ -195,4 +195,4 @@ jobs:
 
       - name: Terragrunt apply (Dev)
         working-directory: ${{ env.TG_DIR }}
-        run: terragrunt apply --terragrunt-non-interactive -auto-approve tfplan
+        run: terragrunt apply --terragrunt-non-interactive -auto-approve 
