@@ -11,8 +11,10 @@ permissions:
   contents: read
 
 env:
-  TF_VERSION: "1.10.0"
+  TF_VERSION: ""1.9.8""
   AWS_REGION: "eu-west-2"  
+  Tr_VERSION: ""0.54.22""
+  TG_DIR: infra/live/dev
 
 concurrency:
   group: terraform-dev-destroy
@@ -39,14 +41,16 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: 1.10.0
+          terraform_version: ${{ env.TF_VERSION }}
+      - name: Setup Terragrunt
+        uses: autero1/action-terragrunt@v3
+        with:
+          terragrunt-version: ${{ env.Tr_VERSION }}
 
-      - name: Terraform Init
-        run: |
-          cd terraform/envs/dev
-          terraform init -reconfigure -input=false -backend-config="backend.hcl"
+      - name: Terragrunt init
+        working-directory: ${{ env.TG_DIR }}
+        run: terragrunt init --terragrunt-non-interactive
 
-      - name: Terraform Destroy
-        run: |
-          cd terraform/envs/dev
-          terraform destroy -auto-approve
+      - name: Terragrunt destroy (Dev)
+        working-directory: ${{ env.TG_DIR }}
+        run: terragrunt destroy --terragrunt-non-interactive -auto-approve
