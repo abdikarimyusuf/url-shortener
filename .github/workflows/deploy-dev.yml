@@ -192,6 +192,8 @@ jobs:
             sed -n '1,40p' tg.json
             echo "Inputs we care about:"
             jq '.inputs | {availability_zones, public_subnets, private_subnets, db_subnets}' tg.json
+      - name: Show TF_VAR envs
+        run: env | sort | grep '^TF_VAR_' || echo "No TF_VAR_ vars set"
 
       - name: Terragrunt apply (Dev)
         working-directory: ${{ env.TG_DIR }}
