@@ -1,6 +1,6 @@
 resource "aws_wafv2_web_acl" "waf" {
   name  = "${var.name_prefix}-waf"
-  scope = "REGIONAL" # ALB = REGIONAL (CloudFront would be CLOUDFRONT)
+  scope = "= REGIONAL
 
   default_action {
     allow {}
@@ -12,7 +12,7 @@ resource "aws_wafv2_web_acl" "waf" {
     sampled_requests_enabled   = true
   }
 
-  # 1) AWS Managed Rules: Common protections (recommended baseline)
+  # 1 AWS Managed Rules: Common protections (recommended baseline)
   rule {
     name     = "AWSManagedRulesCommonRuleSet"
     priority = 10
@@ -35,7 +35,7 @@ resource "aws_wafv2_web_acl" "waf" {
     }
   }
 
-  # 2) AWS Managed Rules: Known bad inputs
+  # 2 Known bad inputs
   rule {
     name     = "AWSManagedRulesKnownBadInputsRuleSet"
     priority = 20
@@ -58,7 +58,7 @@ resource "aws_wafv2_web_acl" "waf" {
     }
   }
 
-  # 3) AWS Managed Rules: SQL injection
+  # 3 SQL injection
   rule {
     name     = "AWSManagedRulesSQLiRuleSet"
     priority = 30
@@ -81,7 +81,7 @@ resource "aws_wafv2_web_acl" "waf" {
     }
   }
 
-  # 4) Optional rate limit (blocks spam / bots)
+  # 4)  rate limit (blocks spam / bots)
   dynamic "rule" {
     for_each = var.rate_limit > 0 ? [1] : []
     content {
@@ -110,7 +110,7 @@ resource "aws_wafv2_web_acl" "waf" {
   tags = var.tags
 }
 
-# Attach WAF to the ALB (this is the “make it active” step)
+#  WAF to the ALB 
 resource "aws_wafv2_web_acl_association" "alb" {
   resource_arn = var.alb_arn
   web_acl_arn  = aws_wafv2_web_acl.waf.arn
