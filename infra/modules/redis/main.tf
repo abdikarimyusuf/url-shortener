@@ -15,5 +15,5 @@ resource "aws_elasticache_cluster" "cluster" {
 
   port = 6379
 
-  
+
 }
