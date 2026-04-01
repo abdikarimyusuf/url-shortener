@@ -54,6 +54,18 @@ module "ecs_sg" {
 
   #tags = local.tags
 }
+module "redis_sg" {
+  source = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/security?ref=main"
+
+  name   = "${local.name_prefix}-redis-sg"
+  vpc_id = module.vpc.vpc_id
+
+  ingress_rules = [
+    { protocol = "tcp", from_port = var.redis_port, to_port = var.redis_port, security_groups = [module.ecs_sg.sg_id] }
+  ]
+
+  #tags = local.tags
+}
 
 
 module "endpoints_sg" {
@@ -198,3 +210,11 @@ module "dynamodb" {
 }
 
 
+
+module "redis" {
+  source = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/redis?ref=main"
+  name= "redis"
+  security_group_ids = [module.redis_sg.sg_id]
+  subnet_ids = module.vpc.private_subnet_ids
+  
+}

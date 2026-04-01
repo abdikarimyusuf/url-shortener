@@ -7,6 +7,11 @@ variable "ecs_port" {
   type    = number
   default = 8080
 }
+variable "redis_port" {
+  type    = number
+  default = 6379
+}
+
 
 variable "project" {
   type        = string
@@ -97,4 +102,5 @@ variable "extra_tags" {
 variable "env" {
   type = string
 }
+
 

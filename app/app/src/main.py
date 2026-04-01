@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import RedirectResponse, HTMLResponse
 import os, hashlib, time
 from .ddb import put_mapping, get_mapping
+from .redis_client import redis_client
 
 app = FastAPI()
 
@@ -95,12 +96,22 @@ async def shorten(req: Request):
 
     short = hashlib.sha256(url.encode()).hexdigest()[:8]
     put_mapping(short, url)
+    redis_client.set(short, url, ex=3600)
     return {"short": short, "url": url}
 
 
 @app.get("/{short_id}")
 def resolve(short_id: str):
+    # 1. Check Redis first
+    cached = redis_client.get(short_id)
+    if cached:
+        return RedirectResponse(cached)
     item = get_mapping(short_id)
     if not item:
         raise HTTPException(404, "not found")
+    return RedirectResponse(item["url"])
+
+    # 3. Store in Redis
+    redis_client.set(short_id, item["url"], ex=3600)
+
     return RedirectResponse(item["url"])

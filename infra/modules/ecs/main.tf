@@ -53,7 +53,10 @@ resource "aws_ecs_task_definition" "task" {
       essential = true
 
       environment = [
-        { name = "TABLE_NAME", value = var.TABLE_NAME }
+        { name = "TABLE_NAME", value = var.TABLE_NAME },
+        { name = "SQS_QUEUE_URL", value = var.QUEUE_URL},
+        { name = ""REDIS_HOST", value = var.redis_endpoint}
+
       ]
       portMappings = [
         {
