@@ -46,6 +46,12 @@ resource "aws_iam_role_policy" "dynamodb_inline" {
   policy = data.aws_iam_policy_document.dynamodb_access.json
 }
 
+resource "aws_iam_service_linked_role" "elasticache" {
+  aws_service_name = "elasticache.amazonaws.com"
+}
+
+
+
 
 
 
