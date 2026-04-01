@@ -212,9 +212,9 @@ module "dynamodb" {
 
 
 module "redis" {
-  source = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/redis?ref=main"
-  name= "redis"
+  source             = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/redis?ref=main"
+  name               = "redis"
   security_group_ids = [module.redis_sg.sg_id]
-  subnet_ids = module.vpc.private_subnet_ids
-  
+  subnet_ids         = module.vpc.private_subnet_ids
+
 }
