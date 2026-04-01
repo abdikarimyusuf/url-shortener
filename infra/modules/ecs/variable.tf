@@ -33,7 +33,7 @@ variable "container_name" {
 
 
 variable "container_log_group" { type = string }
-variable "redis_endpoint"{}
+variable "redis_endpoint" {}
 
 
 
