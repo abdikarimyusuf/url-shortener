@@ -157,6 +157,7 @@ module "ecs_cluster" {
   execution_role_arn = module.iam.ecs_execution_role_arn
   task_role_arn      = module.iam.ecs_task_role_arn
   region             = var.region
+  redis_endpoint = module.redis.redis_endpoint
 
   image          = var.image
   container_port = var.container_port

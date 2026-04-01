@@ -10,7 +10,7 @@ resource "aws_elasticache_cluster" "cluster" {
   node_type       = var.node_type
   num_cache_nodes = 1
 
-  subnet_group_name  = aws_elasticache_subnet_group.this.name
+  subnet_group_name  = aws_elasticache_subnet_group.redis.name
   security_group_ids = var.security_group_ids
 
   port = 6379
