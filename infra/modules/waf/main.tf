@@ -1,6 +1,6 @@
 resource "aws_wafv2_web_acl" "waf" {
   name  = "${var.name_prefix}-waf"
-  scope = "= REGIONAL
+  scope = " REGIONAL"
 
   default_action {
     allow {}
