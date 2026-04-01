@@ -217,6 +217,6 @@ module "redis" {
   name               = "redis"
   security_group_ids = [module.redis_sg.sg_id]
   subnet_ids         = module.vpc.private_subnet_ids
-  depends_on = [module.iam]
+  depends_on         = [module.iam]
 
 }
