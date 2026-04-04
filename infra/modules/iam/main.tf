@@ -53,7 +53,7 @@ resource "aws_iam_service_linked_role" "elasticache" {
 resource "aws_iam_role" "codebuild" {
   name = "codebuild-role"
 
-   assume_role_policy = jsonencode({
+  assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       {
@@ -72,7 +72,7 @@ resource "aws_iam_role_policy" "codebuild_policy" {
   name = "codebuild-policy"
   role = aws_iam_role.codebuild.id
 
-   policy = jsonencode({
+  policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
       # Logs

@@ -1,26 +1,27 @@
 resource "aws_codebuild_project" "codebuild" {
-    name = var.name
-    service_role = var.service_role
-    build_timeout = 10
+  name          = var.name
+  service_role  = var.service_role
+  build_timeout = 10
 
-    artifacts {
-  type = "NO_ARTIFACTS"
-}
+  artifacts {
+    type = "NO_ARTIFACTS"
+  }
 
-environment {
-    compute_type = "BUILD_GENERAL1_SMALL"
-    image = "aws/codebuild/standard:7.0"
-    type = "LINUX_CONTAINER"
+  environment {
+    compute_type    = "BUILD_GENERAL1_SMALL"
+    image           = "aws/codebuild/standard:7.0"
+    type            = "LINUX_CONTAINER"
     privileged_mode = true
 
     environment_variable {
-  name  = "ECR_REPO"
-  value = var.ecr_repo_url
-}
+      name  = "ECR_REPO"
+      value = var.ecr_repo_url
+    }
 
-}
+  }
 
-source {
-     type = "CODEPIPELINE" 
-      buildspec = "buildspec.yml" }
+  source {
+    type      = "CODEPIPELINE"
+    buildspec = "buildspec.yml"
+  }
 }
