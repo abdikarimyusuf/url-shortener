@@ -7,11 +7,11 @@ resource "aws_codepipeline" "codepipe" {
   }
 
   stage {
-    name = "source"
+    name = "Source"
     action {
-      name             = "source"
-      category         = "source"
-      owner            = "ThirdParty"
+      name             = "Source"
+      category         = "Source"
+      owner            = "AWS"
       provider         = "CodeStarSourceConnection"
       version          = "1"
       output_artifacts = ["source_output"]
@@ -19,6 +19,7 @@ resource "aws_codepipeline" "codepipe" {
       configuration = {
         ConnectionArn    = var.codestar_connection_arn
         FullRepositoryId = "abdikarimyusuf/url-shortener"
+        BranchName = "main"
       }
 
 
