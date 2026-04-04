@@ -10,7 +10,8 @@ COPY src/ /app/src/
 FROM python:3.12-slim AS runtime
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app
 
 RUN addgroup --system app \
  && adduser  --system --ingroup app --no-create-home app
