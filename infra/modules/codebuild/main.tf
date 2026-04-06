@@ -1,6 +1,6 @@
 resource "aws_codebuild_project" "codebuild" {
   name          = var.name
-  service_role  = var.service_role
+  service_role  = var.role_arn
   build_timeout = 10
 
   artifacts {

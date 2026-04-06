@@ -222,30 +222,30 @@ module "redis" {
 }
 
 module "codebuild" {
-  source             = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/codebuild?ref=main"
-  name          = "url-shortener-build"
-  role_arn      = module.iam.codebuild_role_arn
-  repo_url = "https://github.com/abdikarimyusuf/url-shortener"
-  ecr_repo_url  = module.ecr.ecr_repository_url
+  source       = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/codebuild?ref=main"
+  name         = "url-shortener-build"
+  role_arn     = module.iam.codebuild_role_arn
+  repo_url     = "https://github.com/abdikarimyusuf/url-shortener"
+  ecr_repo_url = module.ecr.ecr_repository_url
 }
 
-  module "codepipeline" {
-  source             = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/codepipeline?ref=main"
+module "codepipeline" {
+  source                  = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/codepipeline?ref=main"
   name                    = "url-shortener-pipeline"
-  role_arn = module.iam.codepipeline_role_arn
-  s3_bucket  = module.s3.bucket_name
+  role_arn                = module.iam.codepipeline_role_arn
+  s3_bucket               = module.s3.bucket_name
   codestar_connection_arn = module.codestar.codestar_connection_arn
-  codebuild_project_name = module.codebuild.name
+  codebuild_project_name  = module.codebuild.name
 
-  }
+}
 
-  module "codestar" {
-  source             = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/codestar?ref=main"
+module "codestar" {
+  source = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/codestar?ref=main"
 
-  }
+}
 
- module "s3" {
-  source             = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/s3?ref=main"
+module "s3" {
+  source = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/s3?ref=main"
 
-  }
+}
 
