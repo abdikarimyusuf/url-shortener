@@ -8,26 +8,26 @@ locals {
   }
   }
 
-  #remote_state {
-    #backend = "s3"
-   # config = {
-      #  bucket       = "notepad-tfstate2"
-#key         = "${path_relative_to_include()}/terraform.tfstate"
-#region       = "eu-west-2"
-#encrypt      = true
+  remote_state {
+    backend = "s3"
+    config = {
+    bucket       = "notepad-tfstate2"
+    key         = "${path_relative_to_include()}/terraform.tfstate"
+    region       = "eu-west-2"
+    encrypt      = true
 
-   # }
+   }
 
 
-  #}
-
-remote_state {
-  backend = "local"
-
-  config = {
-    path = "${path_relative_to_include()}/terraform.tfstate"
   }
-}
+
+#remote_state {
+
+ # backend = "local"
+  #config = {
+   # path = "${path_relative_to_include()}/terraform.tfstate"
+  #}
+#}
 
   terraform {
   extra_arguments "common_vars" {
