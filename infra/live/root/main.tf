@@ -241,6 +241,7 @@ module "codepipeline" {
 
 module "codestar" {
   source = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/codestar?ref=main"
+    name                    = "url-shortener-codestar"
 
 }
 
