@@ -7,25 +7,22 @@ env:
 phases:
   pre_build:
     commands:
-      - echo Logging in to ECR...
+      - echo "Logging in to ECR..."
       - "aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin $ECR_REPO"
-
-
       - "COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)"
       - "IMAGE_TAG=$COMMIT_HASH"
       - echo "Image tag: $IMAGE_TAG"
 
   build:
     commands:
-      - echo Building Docker image...
-      - docker build -t url-shortener ./app
-      - docker tag url-shortener:latest $ECR_REPO:$IMAGE_TAG
+      - echo "Building Docker image..."
+      - "docker build -t url-shortener ./app"
+      - "docker tag url-shortener:latest $ECR_REPO:$IMAGE_TAG"
 
   post_build:
     commands:
-      - echo Pushing image...
-      - docker push $ECR_REPO:$IMAGE_TAG
-
+      - echo "Pushing image..."
+      - "docker push $ECR_REPO:$IMAGE_TAG"
 
      
    
