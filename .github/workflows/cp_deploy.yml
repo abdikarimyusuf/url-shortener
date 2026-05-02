@@ -1,4 +1,4 @@
-Name: Trigger CodePipeline
+name: Trigger CodePipeline
 on:
   push:
     - 'app/**'
