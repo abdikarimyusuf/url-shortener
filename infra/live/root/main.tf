@@ -1,5 +1,5 @@
 locals {
-  name_prefix = lower("${var.project}-${var.environment}")
+  name_prefix = lower("${var.project}")
 
   tags = merge(
     {
@@ -168,7 +168,7 @@ module "ecs_cluster" {
 
   subnets          = module.vpc.private_subnet_ids
   security_group   = [module.ecs_sg.sg_id]
-  target_group_arn = module.alb.target_group_arn
+  target_group_arn = module.alb.target_group_arn_blue
 
   container_log_group = module.aws_cloudwatch_log_group.log_group_name
 
@@ -236,6 +236,8 @@ module "codepipeline" {
   s3_bucket               = module.s3.bucket_name
   codestar_connection_arn = module.codestar.codestar_connection_arn
   codebuild_project_name  = module.codebuild.name
+  ApplicationName = module.codedeploy.app_name
+  DeploymentGroupName = module.codedeploy.gp_name
 
 }
 
@@ -250,3 +252,17 @@ module "s3" {
 
 }
 
+module "codedeploy" {
+  source = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/codedeploy?ref=main"
+  name_prefix = "myapp"
+  service_role_arn = module.iam.codedeploy_role_arn
+  deployment_config_name = "CodeDeployDefault.ECSLinear10PercentEvery1Minutes"
+  deployment_type = "BLUE_GREEN"
+  deployment_option = "WITH_TRAFFIC_CONTROL"
+  cluster_name =  module.ecs_cluster.ecs_cluster_name
+  service_name = module.ecs_cluster.service_name
+  blue_target_group_name = module.alb.target_group_arn_blue
+  green_target_group_name = module.alb.target_group_arn_green
+  listener_arns = module.alb.alb_https_arn
+
+}

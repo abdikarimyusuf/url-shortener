@@ -1,0 +1,23 @@
+Name: Trigger CodePipeline
+on:
+  push:
+    - 'app/**'
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: checkout code
+        uses: actions/checkout@v3
+
+        # --AWS OIDC login
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEV_ROLE_ARN1 }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Trigger CodePipeLine
+        run: |
+          aws codepipeline start-pipeline-execution \
+            --name url-shortener-pipeline

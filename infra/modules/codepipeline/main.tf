@@ -20,6 +20,7 @@ resource "aws_codepipeline" "codepipe" {
         ConnectionArn    = var.codestar_connection_arn
         FullRepositoryId = "abdikarimyusuf/url-shortener"
         BranchName = "main"
+        DetectChanges    = "false"
       }
 
 
@@ -44,6 +45,28 @@ resource "aws_codepipeline" "codepipe" {
         ProjectName = var.codebuild_project_name
       }
 
+    }
+  }
+
+  stage {
+    name = "Deploy"
+    action {
+      name = "Deploy"
+      category = "Deploy"
+      owner = "AWS"
+      provider = "CodeDeployToECS"
+      version = "1"
+      input_artifacts ["build_output"]
+      
+      configuration = {
+        ApplicationName = var.ApplicationName
+        DeploymentGroupName = var.DeploymentGroupName
+        TaskDefinitionTemplateArtifact = "build_output"
+        TaskDefinitionTemplatePath = "taskdef.json"
+        AppSpecTemplateArtifact = "build_output"
+        AppSpecTemplatePath = "appspec.json"
+
+      }
     }
   }
 

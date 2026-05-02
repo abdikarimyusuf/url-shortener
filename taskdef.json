@@ -1,0 +1,38 @@
+{
+    "family" : "url-task",
+    "networkMode" : "awsvpc",
+    "executionRoleArn" : "arn:aws:iam::561041808710:role/URL-SHORTERNER-ecs-execution-role",
+    "taskRoleArn" : "arn:aws:iam::561041808710:role/URL-SHORTERNER-ecs-task-role",
+    "cpu": "256",
+    "memory": "512",
+
+    "containerDefinitions": [
+        {
+            "name" : "url-shortener-build",
+            "image" : "<IMAGE_URI>",
+            "essential" : true,
+
+            "portMappings" : [
+                {
+                    "containerPort" : 8080,
+                    "protocol": "tcp"
+                }
+            ],
+
+            "logConfiguration" : {
+                "logDriver" : "awslogs",
+                "options" : {
+                  "awslogs-group"         : "/ecs/url_shortener",
+                  "awslogs-region"        : "eu-west-2",
+                  "awslogs-stream-prefix" : "ecs"
+
+
+        }
+
+    }
+}
+]
+
+
+
+}

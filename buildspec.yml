@@ -23,5 +23,17 @@ phases:
     commands:
       - "echo Pushing image..."
       - "docker push $ECR_REPO:$IMAGE_TAG"
+
+      - "echo Creating imagedefinitions.json..."
+      - "printf'[{"name": "url-shortener-build","imageUri":"%s"}]'"
+      - "$ECR_REPO:$IMAGE_TAG > imagedefinitions.json"
+
+artifacts:
+  files:
+    - "taskdef.json"
+    - "appspec.yaml"
+    - "imagedefinitions.json"
+
+
    
 

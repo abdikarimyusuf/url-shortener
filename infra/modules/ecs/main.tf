@@ -22,6 +22,15 @@ resource "aws_ecs_service" "svc" {
     security_groups  = var.security_group
     assign_public_ip = true
   }
+  deployment_controller {
+  type = "CODE_DEPLOY"
+}
+lifecycle {
+    ignore_changes = [
+      task_definition,
+      desired_count
+    ]
+  }
 
   load_balancer {
     target_group_arn = var.target_group_arn
