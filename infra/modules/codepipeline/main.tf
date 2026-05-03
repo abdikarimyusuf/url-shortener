@@ -56,7 +56,7 @@ resource "aws_codepipeline" "codepipe" {
       owner = "AWS"
       provider = "CodeDeployToECS"
       version = "1"
-      input_artifacts ["build_output"]
+      input_artifacts = ["build_output"]
       
       configuration = {
         ApplicationName = var.ApplicationName
