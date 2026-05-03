@@ -15,7 +15,7 @@ jobs:
       - name: checkout code
         uses: actions/checkout@v3
 
-        # --AWS OIDC login
+        # --AWS OIDC loginnn
       - name: Configure AWS credentials (OIDC)
         uses: aws-actions/configure-aws-credentials@v4
         with:
