@@ -3,7 +3,7 @@ on:
   push:
     path:
       - 'app/**'
-env
+
 
 jobs:
   trigger:
