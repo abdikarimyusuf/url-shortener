@@ -2,7 +2,7 @@ name: Trigger CodePipeline
 on:
   push:
     path:
-      - 'app/**'
+      - 'app/app/**'
 permissions:
   id-token: write
 
