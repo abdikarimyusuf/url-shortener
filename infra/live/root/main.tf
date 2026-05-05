@@ -137,7 +137,7 @@ module "waf" {
 module "iam" {
   source = "git::https://github.com/abdikarimyusuf/url-shortener.git//infra/modules/iam?ref=main"
 
-  cluster_name       = local.name_prefix
+  name_prefix       = local.name_prefix
   dynamodb_table_arn = module.dynamodb.table_arn
   #tags          = local.tags
 }
