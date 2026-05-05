@@ -29,7 +29,7 @@ resource "aws_codedeploy_deployment_group" "deploy" {
                 name = var.green_target_group_name
             }
             prod_traffic_route {
-                 listener_arns = var.listener_arns
+                 listener_arns = [var.listener_arns]
 }
         }
     }

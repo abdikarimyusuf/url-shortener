@@ -45,5 +45,5 @@ variable "green_target_group_name" {
 
 variable "listener_arns" {
   description = " ALB listener ARNs"
-  type        = string
+  type        = list(string)
 }
